@@ -1,0 +1,26 @@
+[project]
+name = 'bitgate'
+description = 'BitGate API Registry and Payments contracts'
+authors = []
+telemetry = true
+cache_dir = './.cache'
+requirements = []
+
+[contracts.api-registry]
+path = 'contracts/api-registry.clar'
+clarity_version = 3
+epoch = 3.1
+
+[contracts.api-payments]
+path = 'contracts/api-payments.clar'
+clarity_version = 3
+epoch = 3.1
+
+[repl.analysis]
+passes = ['check_checker']
+
+[repl.analysis.check_checker]
+strict = false
+trusted_sender = false
+trusted_caller = false
+callee_filter = false

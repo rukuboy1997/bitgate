@@ -1,0 +1,21 @@
+packages:
+  "@stacks/connect": "Hiro wallet connection UI and session management"
+  "@stacks/network": "Stacks network configuration for Testnet"
+  "@stacks/transactions": "Stacks smart contract types and argument builders"
+  "framer-motion": "Premium UI animations and page transitions"
+  "clsx": "Utility for constructing className strings"
+  "tailwind-merge": "Utility for merging tailwind classes safely"
+  "lucide-react": "Icons for UI elements"
+  "@workspace/api-client-react": "Generated API hooks"
+
+images:
+  - path: "artifacts/bitgate/public/images/hero-bg.png"
+    description: "Dark, moody abstract blockchain data visualization with neon cyan and deep purple glowing network lines, premium web3 aesthetic"
+    aspect_ratio: "16:9"
+  - path: "artifacts/bitgate/public/images/logo.png"
+    description: "Minimalist geometric hexagon logo in glowing cyan on a transparent background, modern tech"
+    aspect_ratio: "1:1"
+
+notes:
+  - "The app uses @workspace/api-client-react for all API interactions."
+  - "Stacks testnet contract is hardcoded to ST1Q4E29HCNRQ5E24PW5E63CCTW63FGFP02SND6B"
