@@ -13,27 +13,33 @@ function useX402(endpoint) {
     setStage({ type: "calling" });
     const headers = {};
     if (txid) headers["x-payment-tx"] = txid;
-    const res = await fetch(`${API_BASE}${endpoint}`, { headers });
-    if (res.status === 402) {
-      const body = await res.json();
-      setStage({ type: "requires_payment", details: body });
-      return;
+    try {
+      const res = await fetch(`${API_BASE}${endpoint}`, { headers });
+      if (res.status === 402) {
+        const body = await res.json();
+        setStage({ type: "requires_payment", details: body });
+        return;
+      }
+      if (!res.ok) {
+        const err = await res.text();
+        setStage({ type: "error", message: err });
+        return;
+      }
+      const data = await res.json();
+      setStage({ type: "success", data, txid: txid ?? "" });
+    } catch (err) {
+      setStage({ type: "error", message: "Network error" });
     }
-    if (!res.ok) {
-      const err = await res.text();
-      setStage({ type: "error", message: err });
-      return;
-    }
-    const data = await res.json();
-    setStage({ type: "success", data, txid: txid ?? "" });
   }
-  function pay(details) {
+  async function pay(details) {
     if (!isConnected || !address) {
-      connect();
-      return;
+      await connect();
     }
     const accept = details.accepts[0];
-    if (!accept) return;
+    if (!accept) {
+      setStage({ type: "error", message: "No payment options available" });
+      return;
+    }
     setStage({ type: "waiting_wallet" });
     openContractCall({
       network: STACKS_TESTNET,
@@ -42,13 +48,13 @@ function useX402(endpoint) {
       functionName: accept.extra.functionName,
       functionArgs: [
         uintCV(accept.extra.apiId),
-        uintCV(accept.price),
-        stringAsciiCV(accept.asset)
+        uintCV(Math.floor(accept.price * 100)),
+        stringAsciiCV(accept.asset),
       ],
       onFinish: (data) => {
         toast({
           title: "Payment sent",
-          description: "Verifying transaction on Stacks\u2026"
+          description: "Verifying transaction on Stacks\u2026",
         });
         const txid = data.txId;
         setStage({ type: "verifying", txid });
@@ -57,7 +63,7 @@ function useX402(endpoint) {
       onCancel: () => {
         setStage({ type: "idle" });
         toast({ title: "Payment cancelled" });
-      }
+      },
     });
   }
   function reset() {
@@ -65,6 +71,4 @@ function useX402(endpoint) {
   }
   return { stage, callEndpoint, pay, reset };
 }
-export {
-  useX402
-};
+export { useX402 };

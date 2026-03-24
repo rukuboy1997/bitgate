@@ -5,24 +5,28 @@ import {
   ToastDescription,
   ToastProvider,
   ToastTitle,
-  ToastViewport
+  ToastViewport,
 } from "@/components/ui/toast";
 function Toaster() {
   const { toasts } = useToast();
-  return <ToastProvider>
-      {toasts.map(function({ id, title, description, action, ...props }) {
-    return <Toast key={id} {...props}>
+  return (
+    <ToastProvider>
+      {toasts.map(function ({ id, title, description, action, ...props }) {
+        return (
+          <Toast key={id} {...props}>
             <div className="grid gap-1">
               {title && <ToastTitle>{title}</ToastTitle>}
-              {description && <ToastDescription>{description}</ToastDescription>}
+              {description && (
+                <ToastDescription>{description}</ToastDescription>
+              )}
             </div>
             {action}
             <ToastClose />
-          </Toast>;
-  })}
+          </Toast>
+        );
+      })}
       <ToastViewport />
-    </ToastProvider>;
+    </ToastProvider>
+  );
 }
-export {
-  Toaster
-};
+export { Toaster };

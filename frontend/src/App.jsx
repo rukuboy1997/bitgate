@@ -10,19 +10,22 @@ const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       retry: 1,
-      refetchOnWindowFocus: false
-    }
-  }
+      refetchOnWindowFocus: false,
+    },
+  },
 });
 function Router() {
-  return <Switch>
+  return (
+    <Switch>
       <Route path="/" component={Home} />
       <Route path="/dashboard" component={Dashboard} />
       <Route component={NotFound} />
-    </Switch>;
+    </Switch>
+  );
 }
 function App() {
-  return <QueryClientProvider client={queryClient}>
+  return (
+    <QueryClientProvider client={queryClient}>
       <StacksProvider>
         <TooltipProvider>
           <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
@@ -31,9 +34,8 @@ function App() {
           <Toaster />
         </TooltipProvider>
       </StacksProvider>
-    </QueryClientProvider>;
+    </QueryClientProvider>
+  );
 }
 var stdin_default = App;
-export {
-  stdin_default as default
-};
+export { stdin_default as default };

@@ -7,31 +7,27 @@ const badgeVariants = cva(
   {
     variants: {
       variant: {
-        default: (
+        default:
           // @replit shadow-xs instead of shadow, no hover because we use hover-elevate
-          "border-transparent bg-primary text-primary-foreground shadow-xs"
-        ),
-        secondary: (
+          "border-transparent bg-primary text-primary-foreground shadow-xs",
+        secondary:
           // @replit no hover because we use hover-elevate
-          "border-transparent bg-secondary text-secondary-foreground"
-        ),
-        destructive: (
+          "border-transparent bg-secondary text-secondary-foreground",
+        destructive:
           // @replit shadow-xs instead of shadow, no hover because we use hover-elevate
-          "border-transparent bg-destructive text-destructive-foreground shadow-xs"
-        ),
+          "border-transparent bg-destructive text-destructive-foreground shadow-xs",
         // @replit shadow-xs" - use badge outline variable
-        outline: "text-foreground border [border-color:var(--badge-outline)]"
-      }
+        outline: "text-foreground border [border-color:var(--badge-outline)]",
+      },
     },
     defaultVariants: {
-      variant: "default"
-    }
-  }
+      variant: "default",
+    },
+  },
 );
 function Badge({ className, variant, ...props }) {
-  return <div className={cn(badgeVariants({ variant }), className)} {...props} />;
+  return (
+    <div className={cn(badgeVariants({ variant }), className)} {...props} />
+  );
 }
-export {
-  Badge,
-  badgeVariants
-};
+export { Badge, badgeVariants };

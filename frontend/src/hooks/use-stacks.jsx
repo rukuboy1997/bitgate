@@ -1,5 +1,10 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { connect, disconnect, isConnected, getLocalStorage } from "@stacks/connect";
+import {
+  connect,
+  disconnect,
+  isConnected,
+  getLocalStorage,
+} from "@stacks/connect";
 const StacksContext = createContext(void 0);
 function getTestnetAddress() {
   const stored = getLocalStorage();
@@ -14,8 +19,10 @@ function StacksProvider({ children }) {
   useEffect(() => {
     if (isConnected()) {
       const addr = getTestnetAddress();
-      setAddress(addr);
-      setConnected(true);
+      if (addr) {
+        setAddress(addr);
+        setConnected(true);
+      }
     }
   }, []);
   const handleConnect = async () => {
@@ -33,16 +40,18 @@ function StacksProvider({ children }) {
     setAddress(null);
     setConnected(false);
   };
-  return <StacksContext.Provider
-    value={{
-      address,
-      isConnected: connected,
-      connect: handleConnect,
-      disconnect: handleDisconnect
-    }}
-  >
+  return (
+    <StacksContext.Provider
+      value={{
+        address,
+        isConnected: connected,
+        connect: handleConnect,
+        disconnect: handleDisconnect,
+      }}
+    >
       {children}
-    </StacksContext.Provider>;
+    </StacksContext.Provider>
+  );
 }
 function useStacks() {
   const context = useContext(StacksContext);
@@ -51,7 +60,4 @@ function useStacks() {
   }
   return context;
 }
-export {
-  StacksProvider,
-  useStacks
-};
+export { StacksProvider, useStacks };

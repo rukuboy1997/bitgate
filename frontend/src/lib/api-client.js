@@ -3,7 +3,10 @@ import { API_BASE } from "./api";
 
 class ApiError extends Error {
   constructor(response, data) {
-    const msg = data?.error || data?.message || `HTTP ${response.status} ${response.statusText}`;
+    const msg =
+      data?.error ||
+      data?.message ||
+      `HTTP ${response.status} ${response.statusText}`;
     super(msg);
     this.name = "ApiError";
     this.status = response.status;
@@ -13,28 +16,41 @@ class ApiError extends Error {
 }
 
 async function apiFetch(path, options = {}) {
-  const url = `${API_BASE}${path}`;
-  const response = await fetch(url, options);
-  if (!response.ok) {
-    const data = await response.json().catch(() => null);
-    throw new ApiError(response, data);
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 10000);
+
+  try {
+    const url = `${API_BASE}${path}`;
+    const response = await fetch(url, {
+      ...options,
+      signal: controller.signal,
+    });
+
+    if (!response.ok) {
+      const data = await response.json().catch(() => null);
+      throw new ApiError(response, data);
+    }
+
+    const text = await response.text();
+    return text ? JSON.parse(text) : {};
+  } finally {
+    clearTimeout(timeout);
   }
-  return response.json();
 }
 
 export function useListApis(options) {
   const query = useQuery({
-    queryKey: ["/api/apis"],
-    queryFn: ({ signal }) => apiFetch("/apis", { signal }),
+    queryKey: ["/apis"],
+    queryFn: ({ signal }) => apiFetch("/marketplace/apis", { signal }),
     ...options?.query,
   });
-  return { ...query, queryKey: ["/api/apis"] };
+  return { ...query, queryKey: ["apis"] };
 }
 
 export function useVerifyPayment(options) {
   return useMutation({
     mutationKey: ["verifyPayment"],
-    mutationFn: ({ data }) =>
+    mutationFn: (data) =>
       apiFetch("/payment/verify", {
         method: "POST",
         headers: { "Content-Type": "application/json" },

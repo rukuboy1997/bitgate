@@ -2,6 +2,9 @@ import { v4 as uuidv4 } from "uuid";
 import { saveKey, getKey } from "../../core/storage/memory.store.js";
 
 export async function processPayment({ txid, userAddress, apiId }) {
+
+  console.log({ txid, userAddress, apiId });
+
   if (!txid || !userAddress) {
     throw new Error("txid and userAddress required");
   }

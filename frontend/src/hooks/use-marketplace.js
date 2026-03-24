@@ -14,72 +14,54 @@ function useMarketplacePayment() {
   const queryClient = useQueryClient();
   const handlePayment = async (apiId, price, asset) => {
     if (!isConnected || !address) {
-      connect();
-      return;
+      await connect();
     }
     try {
-      await openContractCall({
+      openContractCall({
         network: STACKS_TESTNET,
         contractAddress: CONTRACT_ADDRESS,
         contractName: CONTRACT_NAME,
         functionName: "record-payment",
         functionArgs: [
           uintCV(apiId),
-          uintCV(price),
-          stringAsciiCV(asset)
+          uintCV(Math.floor(price * 100)),
+          stringAsciiCV(asset),
         ],
         onFinish: (data) => {
           toast({
             title: "Transaction Broadcasted",
-            description: "Verifying payment on the network..."
+            description: "Verifying payment on the network...",
           });
-          verifyMutation.mutate(
-            {
-              data: {
-                txid: data.txId,
-                userAddress: address,
-                apiId
-              }
+
+          verifyMutation.mutate({
+            data: {
+              txid: data.txId,
+              userAddress: address,
+              apiId,
+              asset,
+              price,
             },
-            {
-              onSuccess: () => {
-                toast({
-                  title: "Payment Verified!",
-                  description: "Your API key has been issued successfully."
-                });
-                queryClient.invalidateQueries({ queryKey: ["/api/payment/key"] });
-              },
-              onError: (error) => {
-                toast({
-                  variant: "destructive",
-                  title: "Verification Failed",
-                  description: error.error?.error || "Could not verify payment."
-                });
-              }
-            }
-          );
+          });
         },
         onCancel: () => {
           toast({
             title: "Payment Cancelled",
-            description: "You cancelled the transaction."
+            description: "You cancelled the transaction.",
           });
-        }
+        },
       });
     } catch (err) {
       console.error(err);
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Failed to initialize wallet transaction."
+        description: "Failed to initialize wallet transaction.",
       });
     }
   };
   return {
     handlePayment,
-    isVerifying: verifyMutation.isPending
+    isVerifying: verifyMutation.isPending,
   };
 }
-export {
-  useMarketplacePayment
-};
+export { useMarketplacePayment };
